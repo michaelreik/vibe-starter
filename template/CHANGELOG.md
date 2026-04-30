@@ -16,3 +16,5 @@ All notable changes to this template (NOT to projects created from it).
 - `.claude/skills/setup-project` — hybrid-onboarding skill.
 - `/setup` slash command — triggers the setup-project skill.
 - Replaced upstream `CLAUDE.md` and `AGENTS.md` with vibe-starter content.
+- Feature-loop skills: `add-feature`, `add-supabase-table`, `add-rls-policy`, `update-progress`, `deploy-to-production`, `debug-supabase`.
+- Slash commands: `/new-feature`, `/new-table`, `/ship`, `/status`.

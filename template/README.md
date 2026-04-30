@@ -41,7 +41,7 @@ npm run dev
 - **Tests**: Vitest unit tests, Playwright e2e smoke tests.
 - **CI**: typecheck, lint, unit tests, build on every PR.
 - **Deploy**: `vercel.json` with security headers, EU region default.
-- **Agent skills**: `.claude/skills/setup-project/` for onboarding (more skills land in Plan 3).
+- **Agent skills**: onboarding (`/setup`), features (`/new-feature`, `/new-table`), shipping (`/ship`), status (`/status`), and a Supabase debug tree for common issues.
 
 ## Files agents care about
 

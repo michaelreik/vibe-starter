@@ -17,20 +17,26 @@ Recommend the user run `/setup` before any other work. The setup flow
 authenticates the user with GitHub, Supabase, and Vercel, then creates and
 links the corresponding remote projects.
 
-## Doing feature work
+## Available skills and slash commands
 
-For new features:
-- Use the `add-feature` skill (Plan 3) when available; until then, follow this checklist:
-  1. Read `PROGRESS.md` for context.
-  2. Plan migrations, server actions, UI changes.
-  3. **Always** add RLS policies for new user-owned tables. Use `supabase/migrations/0002_notes.sql` as the reference pattern.
-  4. Update `PROGRESS.md` after each shipped feature.
-  5. Append to `DECISIONS.md` if you make an architecture-relevant choice.
+The project ships with these agent skills under `.claude/skills/`:
+
+| Skill | Trigger | What it does |
+| --- | --- | --- |
+| `setup-project` | `/setup` | First-time onboarding (GitHub + Supabase + Vercel) |
+| `add-feature` | `/new-feature <desc>` | End-to-end feature: migration → RLS → actions → UI → tests → progress |
+| `add-supabase-table` | `/new-table <desc>` | New table with canonical 4-policy RLS pattern |
+| `add-rls-policy` | "is X secure?" | Audit and add RLS policies on existing tables |
+| `update-progress` | (auto, after features) | Maintain `PROGRESS.md` |
+| `deploy-to-production` | `/ship` | Verify + push + wait for Vercel + smoke-check |
+| `debug-supabase` | "auth not working", etc. | Decision tree for common Supabase bugs |
+
+Plan 4 will add `add-email`, `add-i18n`, and `add-custom-domain` (on demand).
 
 ## Database changes
 
 - Every migration goes in `supabase/migrations/000N_<name>.sql`.
-- Every user-owned table MUST have RLS enabled and policies covering SELECT/INSERT/UPDATE/DELETE.
+- Every user-owned table MUST have RLS enabled and policies covering SELECT/INSERT/UPDATE/DELETE — use `add-supabase-table` to get this right by default.
 - Test migrations locally with `npx supabase db reset` before committing.
 
 ## Code style
