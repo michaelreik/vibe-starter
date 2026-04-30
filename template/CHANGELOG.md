@@ -13,3 +13,6 @@ All notable changes to this template (NOT to projects created from it).
 - GitHub Actions CI.
 - `docs/VERSIONS.md`, `scripts/bump-versions.sh`.
 - `PROGRESS.md`, `DECISIONS.md` scaffolds for agent-managed project memory.
+- `.claude/skills/setup-project` — hybrid-onboarding skill.
+- `/setup` slash command — triggers the setup-project skill.
+- Replaced upstream `CLAUDE.md` and `AGENTS.md` with vibe-starter content.

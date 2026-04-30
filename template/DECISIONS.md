@@ -56,3 +56,27 @@ Format per entry:
 **Why:** A `NOT NULL` constraint causes the trigger to abort signup with a constraint violation when email is null at the auth.users level — silently breaking phone/anonymous auth before vibe coders even know it's an option.
 
 **Trade-off:** Application code that displays an email must handle the null case (`profile.email ?? user.email ?? ""`).
+
+## 2026-04-30 — Hybrid setup flow over fully-automated or fully-manual
+
+**Status:** active
+
+**Context:** Vibe coders need to bootstrap GitHub + Supabase + Vercel without typing CLI commands. Three options: (A) fully automated via API tokens (impossible without admin OAuth flows), (B) fully manual checklist in README (high friction, high failure rate), (C) hybrid — agent runs CLIs, user clicks Authorize.
+
+**Decision:** Hybrid. The `setup-project` skill installs CLIs, runs them, and reads `gh`/`supabase`/`vercel` browser-OAuth flows. The user clicks Authorize three times.
+
+**Why:** Fully automated requires service-account credentials we can't safely ship. Fully manual loses the "agent does everything" promise. Hybrid hits the lowest viable friction.
+
+**Trade-off:** Skill cannot run unattended (e.g., in CI). That's acceptable — `/setup` is a one-time human-driven flow.
+
+## 2026-04-30 — `.vibe-state.json` for setup idempotency
+
+**Status:** active
+
+**Context:** `/setup` has six stages, several minutes long. Mid-flow failures (network, OAuth timeouts, Free Tier limits) are common. Re-running from scratch is wasteful and confusing.
+
+**Decision:** Each completed stage appends to `.vibe-state.json.completed_stages`. The skill reads it on every invocation and skips done stages. Sub-step keys (`github_repo`, `supabase_project_ref`, `vercel_project_id`) allow finer-grained resumption inside Stage 5.
+
+**Why:** A single re-runnable `/setup` is dramatically simpler UX than asking the user to remember which step failed.
+
+**Trade-off:** Stale state can confuse the skill (e.g., user deleted the GitHub repo manually but `github_repo` is still in state). Edge cases are spelled out in the skill's "Edge cases" section.
