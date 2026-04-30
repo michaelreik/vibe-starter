@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# vibe-starter (template)
 
-## Getting Started
+Production-ready scaffold for vibe-coded apps. Next.js 16 + Supabase + Vercel,
+with auth, RLS, light/dark UI, and CI all pre-wired.
 
-First, run the development server:
+## Quick start (manual setup — until /setup is built in Plan 2)
 
 ```bash
+# 1. Clone or "Use this template" on GitHub
+git clone <your-repo> my-app && cd my-app
+npm install
+
+# 2. Start a local Supabase (requires Docker)
+npx supabase start
+# Note the API URL and anon/publishable key it prints.
+
+# 3. Apply migrations
+npx supabase db reset
+
+# 4. Configure env
+cp .env.example .env.local
+# Paste the values from `supabase status` into .env.local.
+
+# 5. Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Open http://localhost:3000 — you'll be redirected to /login.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What's inside
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Auth**: Magic-link sign-in, session-refresh middleware, protected
+  `/dashboard`, `/account`, `/notes`.
+- **Database**: `profiles` (1:1 with auth.users) and `notes` (example
+  user-owned content), both with full RLS policies.
+- **UI**: shadcn/ui, Tailwind v4, light/dark mode toggle.
+- **Tests**: Vitest unit tests, Playwright e2e smoke tests.
+- **CI**: typecheck, lint, unit tests, build on every PR.
+- **Deploy**: `vercel.json` with security headers, EU region default.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Folder layout
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `docs/VERSIONS.md` for the dependency versions this template was last
+tested with, and `scripts/bump-versions.sh` to update everything.
