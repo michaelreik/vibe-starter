@@ -1,8 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { updateProfile } from "@/lib/actions/profile";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { AccountForm } from "@/components/account-form";
 
 export default async function AccountPage() {
   const supabase = await createClient();
@@ -18,21 +15,10 @@ export default async function AccountPage() {
   return (
     <div className="max-w-md space-y-6">
       <h1 className="text-2xl font-bold">Account</h1>
-      <form action={updateProfile} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" value={profile?.email ?? ""} disabled />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="full_name">Full name</Label>
-          <Input
-            id="full_name"
-            name="full_name"
-            defaultValue={profile?.full_name ?? ""}
-          />
-        </div>
-        <Button type="submit">Save</Button>
-      </form>
+      <AccountForm
+        email={profile?.email ?? user?.email ?? ""}
+        initialFullName={profile?.full_name ?? ""}
+      />
     </div>
   );
 }
