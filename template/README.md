@@ -1,43 +1,57 @@
 # vibe-starter (template)
 
 Production-ready scaffold for vibe-coded apps. Next.js 16 + Supabase + Vercel,
-with auth, RLS, light/dark UI, and CI all pre-wired.
+with auth, RLS, light/dark UI, CI, and one-command onboarding.
 
-## Quick start (manual setup — until /setup is built in Plan 2)
+## Quick start (recommended — using a coding agent)
+
+1. Click **Use this template** on GitHub (or `git clone` it).
+2. Open the project in Claude Code (or any agent that reads `.claude/`).
+3. Type `/setup` in the agent.
+4. Click "Authorize" in three browser tabs (GitHub, Supabase, Vercel).
+5. Tell the agent what you want to build.
+
+That's it. The agent installs missing CLIs, creates the GitHub repo, the
+Supabase project, the Vercel deployment, sets all env vars, runs migrations,
+and verifies that magic-link login works on the live URL.
+
+## Manual setup (without an agent)
 
 ```bash
-# 1. Clone or "Use this template" on GitHub
 git clone <your-repo> my-app && cd my-app
 npm install
 
-# 2. Start a local Supabase (requires Docker)
+# 1. Local Supabase (requires Docker)
 npx supabase start
-# Note the API URL and anon/publishable key it prints.
-
-# 3. Apply migrations
 npx supabase db reset
 
-# 4. Configure env
+# 2. Configure env
 cp .env.example .env.local
-# Paste the values from `supabase status` into .env.local.
+# Paste the values from `npx supabase status` into .env.local.
 
-# 5. Run dev server
+# 3. Run dev server
 npm run dev
-# Open http://localhost:3000 — you'll be redirected to /login.
 ```
 
 ## What's inside
 
-- **Auth**: Magic-link sign-in, session-refresh middleware, protected
-  `/dashboard`, `/account`, `/notes`.
-- **Database**: `profiles` (1:1 with auth.users) and `notes` (example
-  user-owned content), both with full RLS policies.
+- **Auth**: Magic-link sign-in, session-refresh middleware, protected `/dashboard`, `/account`, `/notes`.
+- **Database**: `profiles` and `notes` tables with full RLS.
 - **UI**: shadcn/ui, Tailwind v4, light/dark mode toggle.
 - **Tests**: Vitest unit tests, Playwright e2e smoke tests.
 - **CI**: typecheck, lint, unit tests, build on every PR.
 - **Deploy**: `vercel.json` with security headers, EU region default.
+- **Agent skills**: `.claude/skills/setup-project/` for onboarding (more skills land in Plan 3).
 
-## Folder layout
+## Files agents care about
+
+- `CLAUDE.md` — entry point for any coding agent.
+- `AGENTS.md` — Next.js 16 + Supabase gotchas (newer than most training data).
+- `PROGRESS.md` — your project memory; the agent reads it every session.
+- `DECISIONS.md` — architectural decisions log.
+- `.vibe-state.json` — gitignored; tracks `/setup` progress.
+
+## Versions and updates
 
 See `docs/VERSIONS.md` for the dependency versions this template was last
 tested with, and `scripts/bump-versions.sh` to update everything.
