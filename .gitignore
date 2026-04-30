@@ -1,0 +1,8 @@
+node_modules/
+.next/
+.vercel/
+.env
+.env.local
+.vibe-state.json
+.DS_Store
+*.log
