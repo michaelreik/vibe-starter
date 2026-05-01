@@ -34,10 +34,8 @@ All five phase plans (Foundation → Setup Skill → Feature-Loop Skills → On-
 Skills → CLI Wrapper) are implemented and committed across feature branches.
 See `docs/superpowers/plans/` for the per-phase plan documents.
 
-## Next steps for the maintainer
+## Next steps and how to test
 
-1. Push `template/` to a public GitHub repo and update the default `degit`
-   source in `cli/src/scaffold.js` if the org/repo name differs.
-2. Publish `cli/` to npm: `cd cli && npm publish --access public`.
-3. Manually walk through `/setup` once on a throwaway clone to verify the
-   end-to-end flow against real GitHub / Supabase / Vercel accounts.
+See [`docs/MAINTAINER.md`](docs/MAINTAINER.md) for:
+- The three remaining steps (mark repo as template, publish CLI to npm, end-to-end verify)
+- A six-level testing guideline from "template builds locally" up to "feature-loop end-to-end"
