@@ -30,8 +30,9 @@ The project ships with these agent skills under `.claude/skills/`:
 | `update-progress` | (auto, after features) | Maintain `PROGRESS.md` |
 | `deploy-to-production` | `/ship` | Verify + push + wait for Vercel + smoke-check |
 | `debug-supabase` | "auth not working", etc. | Decision tree for common Supabase bugs |
-
-Plan 4 will add `add-email`, `add-i18n`, and `add-custom-domain` (on demand).
+| `add-email` | `/add-email` | Wire Resend for transactional emails |
+| `add-i18n` | `/add-i18n` | Multi-language support via next-intl |
+| `add-custom-domain` | `/add-domain` | Custom domain on Vercel (SSL via LetsEncrypt) |
 
 ## Database changes
 

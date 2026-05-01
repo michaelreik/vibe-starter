@@ -18,3 +18,5 @@ All notable changes to this template (NOT to projects created from it).
 - Replaced upstream `CLAUDE.md` and `AGENTS.md` with vibe-starter content.
 - Feature-loop skills: `add-feature`, `add-supabase-table`, `add-rls-policy`, `update-progress`, `deploy-to-production`, `debug-supabase`.
 - Slash commands: `/new-feature`, `/new-table`, `/ship`, `/status`.
+- On-demand skills: `add-email` (Resend), `add-i18n` (next-intl), `add-custom-domain` (Cloudflare DNS + Vercel SSL).
+- Slash commands: `/add-email`, `/add-i18n`, `/add-domain`.
