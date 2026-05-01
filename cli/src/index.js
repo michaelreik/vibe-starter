@@ -12,7 +12,7 @@ Arguments:
 
 Options:
   --template <source>     degit source for the template repo.
-                          Default: vibe-starter/vibe-starter/template
+                          Default: michaelreik/vibe-starter/template
   --local <path>          Use a local copy of the template instead of fetching.
                           Useful for development of the template itself.
   -h, --help              Show this help.

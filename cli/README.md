@@ -1,6 +1,6 @@
 # create-vibe-app
 
-CLI wrapper for the [vibe-starter](https://github.com/vibe-starter/vibe-starter)
+CLI wrapper for the [vibe-starter](https://github.com/michaelreik/vibe-starter)
 template. Scaffolds a Next.js 16 + Supabase + Vercel project pre-wired for
 vibe coders, then hands off to a coding agent for the rest.
 
@@ -23,7 +23,7 @@ scaffold to live URL.
 create-vibe-app <project-directory> [options]
 
   --template <source>   degit source for the template repo
-                        (default: vibe-starter/vibe-starter/template)
+                        (default: michaelreik/vibe-starter/template)
   --local <path>        Use a local copy of the template (for development)
   -h, --help            Show help
 ```

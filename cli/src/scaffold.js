@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import { resolve, basename } from "node:path";
 import degit from "degit";
 
-const DEFAULT_REPO = "vibe-starter/vibe-starter/template";
+const DEFAULT_REPO = "michaelreik/vibe-starter/template";
 // Format expected by degit: <user>/<repo>[/<subdir>][#ref]
 
 const LOCAL_COPY_SKIP = new Set([
