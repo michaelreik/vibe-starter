@@ -1,0 +1,32 @@
+{
+  "name": "create-vibe-app",
+  "version": "0.1.0",
+  "description": "Scaffold a Next.js + Supabase + Vercel app pre-wired for vibe coders. Pairs with the vibe-starter template.",
+  "type": "module",
+  "bin": {
+    "create-vibe-app": "bin/create-vibe-app.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "smoke": "node bin/create-vibe-app.js"
+  },
+  "keywords": [
+    "nextjs",
+    "supabase",
+    "vercel",
+    "starter",
+    "template",
+    "vibe-coding"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "degit": "^2.8.4"
+  }
+}
