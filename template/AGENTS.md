@@ -29,3 +29,4 @@ Without RLS, anon-key requests return all rows from anyone — a guaranteed data
 
 - Built on `@base-ui/react`, NOT Radix. The `asChild` prop is not supported on `Button`.
 - For "button that navigates", use `<Link href="..." className={buttonVariants()}>...</Link>`.
+- `<Button>` defaults to `type="button"` (Base UI behavior, unlike plain `<button>`). When placing one inside a `<form>` that should submit, **set `type="submit"` explicitly** — otherwise clicks are silently no-ops.

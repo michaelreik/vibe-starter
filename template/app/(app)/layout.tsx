@@ -40,7 +40,7 @@ export default async function AppLayout({
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <form action={signOut}>
-              <Button variant="ghost" size="sm">
+              <Button type="submit" variant="ghost" size="sm">
                 Sign out
               </Button>
             </form>
