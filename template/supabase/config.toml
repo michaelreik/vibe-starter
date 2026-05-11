@@ -242,16 +242,6 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Custom magic-link template — required for two reasons:
-#  1. The default GoTrue template builds a URL that 404s behind Kong on the
-#     local CLI stack (uses /verify instead of /auth/v1/verify).
-#  2. @supabase/ssr hardcodes flowType=pkce, which makes verifyOtp(token_hash)
-#     fail without a code-verifier cookie. Putting raw token+email in the URL
-#     lets us call verifyOtp(email, token, type) which works in either flow.
-[auth.email.template.magic_link]
-subject = "Sign in"
-content_path = "./supabase/templates/magic_link.html"
-
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

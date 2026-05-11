@@ -3,22 +3,18 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function signInWithMagicLink(formData: FormData) {
+export async function signInWithPassword(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
-  if (!email) {
-    return { error: "Email is required." };
-  }
+  const password = String(formData.get("password") ?? "");
+
+  if (!email) return { error: "Email is required." };
+  if (!password) return { error: "Password is required." };
 
   const supabase = await createClient();
-  // The custom magic-link email template (supabase/templates/magic_link.html)
-  // bakes in `next=/dashboard`, so emailRedirectTo isn't needed for routing.
-  const { error } = await supabase.auth.signInWithOtp({ email });
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return { error: error.message };
 
-  if (error) {
-    return { error: error.message };
-  }
-
-  return { success: true };
+  redirect("/dashboard");
 }
 
 export async function signOut() {

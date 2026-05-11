@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { signInWithMagicLink } from "@/lib/actions/auth";
+import { useTransition } from "react";
+import { signInWithPassword } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,16 +16,11 @@ import { toast } from "sonner";
 
 export default function LoginPage() {
   const [pending, startTransition] = useTransition();
-  const [sent, setSent] = useState(false);
 
-  async function action(formData: FormData) {
+  function action(formData: FormData) {
     startTransition(async () => {
-      const result = await signInWithMagicLink(formData);
-      if (result.error) {
-        toast.error(result.error);
-      } else {
-        setSent(true);
-      }
+      const result = await signInWithPassword(formData);
+      if (result?.error) toast.error(result.error);
     });
   }
 
@@ -35,32 +30,40 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
           <CardDescription>
-            We&apos;ll email you a magic link — no password needed.
+            Use the credentials you set during <code>/setup</code>.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {sent ? (
-            <p className="text-sm text-muted-foreground">
-              Check your email for the magic link.
-            </p>
-          ) : (
-            <form action={action} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={pending}>
-                {pending ? "Sending…" : "Send magic link"}
-              </Button>
-            </form>
-          )}
+          <form action={action} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@example.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={pending}
+            >
+              {pending ? "Signing in…" : "Sign in"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

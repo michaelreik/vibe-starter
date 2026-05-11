@@ -1,6 +1,6 @@
 ---
 name: debug-supabase
-description: Decision tree for the most common Supabase auth/RLS/migration bugs. Use when the user reports "auth doesn't work", "I can't see my data", "magic link isn't arriving", "migration won't apply", or any other surprising Supabase behavior.
+description: Decision tree for the most common Supabase auth/RLS/migration bugs. Use when the user reports "auth doesn't work", "I can't sign in", "I can't see my data", "migration won't apply", or any other surprising Supabase behavior.
 ---
 
 # debug-supabase Skill
@@ -13,7 +13,7 @@ is faster than reading the user's code from scratch.
 
 - "auth isn't working" / "I can't sign in"
 - "I'm logged in but I can't see my data" (RLS issue)
-- "magic link email doesn't arrive"
+- "I forgot the admin password"
 - "migration won't apply" / "DB out of sync"
 - "TypeScript types are wrong" (after schema change)
 
@@ -29,7 +29,7 @@ Most common cause: env-var mismatch between local and Vercel.
    ```
    Expected: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`. All four must be set for `production`.
 
-2. `NEXT_PUBLIC_SITE_URL` must be the exact production URL (no trailing slash, https). If wrong, the magic-link callback URL in the email is wrong.
+2. `NEXT_PUBLIC_SITE_URL` must be the exact production URL (no trailing slash, https). It's referenced anywhere the app builds an absolute URL.
 
 3. Supabase auth dashboard → Authentication → URL Configuration → "Site URL" must include the production URL. Add it as a redirect URL too.
 

@@ -117,9 +117,11 @@ Create `messages/en.json`:
     "delete": "Delete"
   },
   "auth": {
-    "magicLinkDescription": "We'll email you a magic link — no password needed.",
-    "magicLinkSent": "Check your email for the magic link.",
-    "sendMagicLink": "Send magic link"
+    "signInDescription": "Use the credentials you set during /setup.",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "signInButton": "Sign in",
+    "signingIn": "Signing in…"
   },
   "dashboard": {
     "welcome": "Welcome",
@@ -212,11 +214,16 @@ const isProtected =
 
 (Drops the `startsWith` and uses a regex that matches the path segment regardless of locale prefix.)
 
-### 8. Update Supabase auth callback redirect
+### 8. Verify auth redirect under i18n
 
-Magic-link emails redirect to `/api/auth/callback`, which then redirects to `/dashboard`. With i18n, that's locale-aware. The simplest fix: `/api/auth/callback` reads the user's preferred locale from a cookie or defaults to the default locale, redirects to `/${locale}/dashboard`. Or simpler: redirect to `/dashboard` and let the intl middleware route them to the right locale.
+The password sign-in action calls `redirect("/dashboard")`. With i18n
+enabled, you have two options:
 
-Use the simpler approach — change nothing in the callback, and trust the intl middleware to handle the locale.
+- Leave it as is and trust the intl middleware to forward to `/${locale}/dashboard`.
+- Read the user's locale (cookie or `Accept-Language`) in the auth action and
+  redirect to the localized path directly.
+
+Use the simpler approach — change nothing — and let middleware handle it.
 
 ### 9. Verify
 
@@ -231,7 +238,7 @@ npm run dev
 Smoke check:
 - `http://localhost:3000` → loads in default locale
 - `http://localhost:3000/de` → loads in German (or chosen locale)
-- Auth still works — sign in via magic link
+- Auth still works — sign in with email + password
 - Theme toggle still works
 - Sign out still works
 

@@ -13,7 +13,8 @@ with auth, RLS, light/dark UI, CI, and one-command onboarding.
 
 That's it. The agent installs missing CLIs, creates the GitHub repo, the
 Supabase project, the Vercel deployment, sets all env vars, runs migrations,
-and verifies that magic-link login works on the live URL.
+creates an admin user (you choose the email; the agent generates a strong
+password and shows it once), and verifies sign-in works on the live URL.
 
 ## Manual setup (without an agent)
 
@@ -35,7 +36,7 @@ npm run dev
 
 ## What's inside
 
-- **Auth**: Magic-link sign-in, session-refresh middleware, protected `/dashboard`, `/account`, `/notes`.
+- **Auth**: Email + password sign-in, session-refresh middleware, protected `/dashboard`, `/account`, `/notes`. Local dev seeds an admin user (`admin@example.local` / `changeme`); cloud setup creates one interactively.
 - **Database**: `profiles` and `notes` tables with full RLS.
 - **UI**: shadcn/ui, Tailwind v4, light/dark mode toggle.
 - **Tests**: Vitest unit tests, Playwright e2e smoke tests.

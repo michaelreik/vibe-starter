@@ -34,6 +34,7 @@ resume from the first incomplete one.
   "supabase_region": "<region>",
   "vercel_project_id": "<id>",
   "vercel_url": "<https://...>",
+  "admin_email": "<email used at sign-in>",
   "started_at": "<ISO datetime>",
   "completed_at": "<ISO datetime, only when all stages done>"
 }
@@ -137,6 +138,34 @@ If `.vibe-state.json.vercel_project_id` is unset:
 
 If Vercel Free Tier limit (3 hobby projects), STOP with the same kind of message.
 
+#### Sub-step 5d: Admin user
+
+The app uses password auth. We seed a single admin user via the Supabase
+Admin API so the user can sign in immediately after deploy. Only set this up
+if `.vibe-state.json.admin_email` is unset.
+
+1. Ask the user for an **admin email**. Default to `gh api user --jq .email`
+   if it returns something usable; otherwise prompt them.
+2. **Generate a strong password** — do NOT make the user invent one:
+   ```bash
+   openssl rand -base64 18 | tr -d '+/=' | head -c 18
+   ```
+3. **Show both clearly** and pause: tell the user the password is shown
+   only once, ask them to save it in their password manager, and wait for a
+   "saved" confirmation before continuing.
+4. Create the user via the Supabase Admin API. Use the service-role key
+   from earlier (do NOT use the anon key — admin endpoints reject it):
+   ```bash
+   curl -sf -X POST "${SUPABASE_URL}/auth/v1/admin/users" \
+     -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+     -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+     -H "Content-Type: application/json" \
+     -d "{\"email\":\"<email>\",\"password\":\"<password>\",\"email_confirm\":true}"
+   ```
+   `email_confirm: true` marks the address as already verified so the user can
+   sign in without clicking a confirmation link.
+5. Record `admin_email` in state (NEVER the password).
+
 Append `"remote_projects"`.
 
 ### Stage 6: first_deploy
@@ -145,8 +174,8 @@ Append `"remote_projects"`.
 2-3 minutes; show progress to the user). Capture the production URL from the
 output. Save it as `vercel_url` in state.
 
-Update the `NEXT_PUBLIC_SITE_URL` Vercel env var to the real URL (so magic-link
-emails redirect correctly):
+Update the `NEXT_PUBLIC_SITE_URL` Vercel env var to the real URL (used by
+any future email features and shared everywhere `siteUrl` is referenced):
 - `vercel env rm NEXT_PUBLIC_SITE_URL production --yes`
 - `echo "<real url>" | vercel env add NEXT_PUBLIC_SITE_URL production`
 - Re-deploy: `vercel --prod` (so the new env var takes effect).
@@ -157,8 +186,8 @@ Append `"first_deploy"`.
 
 Open the production URL in the user's browser (`open <url>` on macOS,
 `xdg-open <url>` on Linux). Tell the user: "I've opened the deployed app.
-Sign in with the email you'd like to use — you'll get a magic link. Click it,
-then come back here and tell me 'logged in' once you see the dashboard."
+Sign in with `<admin_email>` and the password you saved earlier. Come back
+and tell me 'logged in' once you see the dashboard."
 
 Wait for the user. When they confirm, append `"verified"` and set `completed_at`
 in state. Print a final summary:
