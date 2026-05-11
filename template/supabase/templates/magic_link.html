@@ -3,7 +3,7 @@
 <p>Click the link below to sign in:</p>
 
 <p>
-  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=magiclink&next=/dashboard">
+  <a href="{{ .SiteURL }}/auth/confirm?token={{ .Token }}&email={{ .Email }}&type=magiclink&next=/dashboard">
     Sign in to your account
   </a>
 </p>
