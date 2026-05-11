@@ -10,12 +10,9 @@ export async function signInWithMagicLink(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: `${siteUrl}/api/auth/callback` },
-  });
+  // The custom magic-link email template (supabase/templates/magic_link.html)
+  // bakes in `next=/dashboard`, so emailRedirectTo isn't needed for routing.
+  const { error } = await supabase.auth.signInWithOtp({ email });
 
   if (error) {
     return { error: error.message };
