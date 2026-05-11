@@ -5,7 +5,7 @@ with auth, RLS, light/dark UI, CI, and one-command onboarding.
 
 ## Quick start (recommended — using a coding agent)
 
-1. Click **Use this template** on GitHub (or `git clone` it).
+1. Scaffold a new project: `npx @michaelreik/create-vibe-app my-app`
 2. Open the project in Claude Code (or any agent that reads `.claude/`).
 3. Type `/setup` in the agent.
 4. Click "Authorize" in three browser tabs (GitHub, Supabase, Vercel).

@@ -1,10 +1,13 @@
 {
-  "name": "create-vibe-app",
+  "name": "@michaelreik/create-vibe-app",
   "version": "0.1.0",
   "description": "Scaffold a Next.js + Supabase + Vercel app pre-wired for vibe coders. Pairs with the vibe-starter template.",
   "type": "module",
   "bin": {
     "create-vibe-app": "bin/create-vibe-app.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "bin",

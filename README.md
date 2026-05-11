@@ -8,7 +8,7 @@ Supabase database including auth, and Vercel hosting.
 ## Quick start
 
 ```bash
-npx create-vibe-app my-recipes
+npx @michaelreik/create-vibe-app my-recipes
 cd my-recipes
 # Open in Claude Code → /setup → click 3× Authorize → live URL
 ```

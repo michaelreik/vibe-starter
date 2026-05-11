@@ -18,9 +18,9 @@ Options:
   -h, --help              Show this help.
 
 Examples:
-  npx create-vibe-app my-recipes
-  npx create-vibe-app my-recipes --template some-org/some-repo/template
-  npx create-vibe-app my-recipes --local ../vibe-starter/template
+  npx @michaelreik/create-vibe-app my-recipes
+  npx @michaelreik/create-vibe-app my-recipes --template some-org/some-repo/template
+  npx @michaelreik/create-vibe-app my-recipes --local ../vibe-starter/template
 `;
 
 export async function run(argv) {

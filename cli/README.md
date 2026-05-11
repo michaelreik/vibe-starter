@@ -1,4 +1,4 @@
-# create-vibe-app
+# @michaelreik/create-vibe-app
 
 CLI wrapper for the [vibe-starter](https://github.com/michaelreik/vibe-starter)
 template. Scaffolds a Next.js 16 + Supabase + Vercel project pre-wired for
@@ -7,7 +7,7 @@ vibe coders, then hands off to a coding agent for the rest.
 ## Usage
 
 ```bash
-npx create-vibe-app my-recipes
+npx @michaelreik/create-vibe-app my-recipes
 cd my-recipes
 # Open in Claude Code (or any agent that reads .claude/), then type:
 /setup

@@ -37,30 +37,18 @@ Vibe Coder können damit ein neues Repo aus deinem Template erzeugen, ohne
 
 ### Schritt A2: CLI auf npm publishen
 
+Das Paket heißt `@michaelreik/create-vibe-app` (scoped — der unscoped Name
+`create-vibe-app` war auf npm bereits belegt). `publishConfig.access` ist
+in `cli/package.json` auf `public` gesetzt, ein zusätzliches `--access public`
+ist daher nicht nötig.
+
 ```bash
 cd /Users/michaelreikersdorfer/Development/vibe-starter/cli
 npm whoami        # falls nicht eingeloggt: npm login
-npm publish --access public
+npm publish
 ```
 
-**Wenn `create-vibe-app` bereits belegt ist** (auf npm prüfen:
-https://www.npmjs.com/package/create-vibe-app), drei Optionen:
-
-1. **Scoped Package** (empfohlen):
-   ```bash
-   # In cli/package.json: "name": "@michaelreik/create-vibe-app"
-   npm publish --access public
-   ```
-   Nutzer rufen dann auf: `npx @michaelreik/create-vibe-app my-app`
-
-2. **Anderer Name**: z.B. `vibe-starter-cli`, `michaelreik-starter`. In
-   `cli/package.json` ändern, neu publishen.
-
-3. **Bestehenden Namen übernehmen**: nur wenn der Author das Paket abgegeben
-   hat oder es deprecated ist. Sonst nicht möglich.
-
-Nach dem Publish den Aufruf in `template/README.md` ggf. anpassen
-(steht aktuell auf `npx create-vibe-app`).
+Nutzer rufen die CLI auf mit: `npx @michaelreik/create-vibe-app my-app`
 
 ### Schritt A3: End-to-End-Test mit echten Accounts
 
@@ -262,7 +250,7 @@ Jedes davon kann eigenständig getestet werden, kostet aber externe Accounts.
 | --- | --- | --- |
 | Port 3000 belegt | anderes Projekt läuft | `lsof -i :3000` → Prozess stoppen |
 | Supabase startet nicht | Docker nicht aktiv | Docker Desktop starten, dann `npx supabase start` |
-| `create-vibe-app: command not found` | nicht via `npx` aufgerufen | `npx create-vibe-app …` oder Pfad zur lokalen Kopie |
+| `create-vibe-app: command not found` | nicht via `npx` aufgerufen | `npx @michaelreik/create-vibe-app …` oder Pfad zur lokalen Kopie |
 | `degit: 404` beim CLI | Repo private oder URL falsch | Repo public machen oder `--template michaelreik/<repo>/template` |
 | Magic-Link Email kommt nicht an | Lokal: in Mailpit | http://127.0.0.1:54324 öffnen |
 | Magic-Link Email kommt in Prod nicht | Supabase Free-SMTP-Limit | `/add-email` für Resend-SMTP-Swap |
