@@ -33,6 +33,7 @@ resume from the first incomplete one.
   "supabase_project_ref": "<ref>",
   "supabase_region": "<region>",
   "vercel_project_id": "<id>",
+  "vercel_git_connected": true,
   "vercel_url": "<https://...>",
   "admin_email": "<email used at sign-in>",
   "started_at": "<ISO datetime>",
@@ -137,6 +138,21 @@ If `.vibe-state.json.vercel_project_id` is unset:
 - Read `.vercel/project.json` for `projectId`, record in state.
 
 If Vercel Free Tier limit (3 hobby projects), STOP with the same kind of message.
+
+If `.vibe-state.json.vercel_git_connected` is unset, **connect the Vercel
+project to the GitHub repo** so `git push` triggers builds (otherwise only
+manual `vercel --prod` deploys work — `/ship` and PR previews silently
+do nothing). Run:
+
+```bash
+vercel git connect "https://github.com/<owner>/<repo>.git"
+```
+
+If the Vercel GitHub App isn't installed on the user's GitHub account yet,
+this command will fail with a clear "GitHub App not installed" error and
+print an install URL. In that case: open the URL in their browser, wait for
+them to confirm install, then retry. Once it succeeds, record
+`"vercel_git_connected": true` in state.
 
 #### Sub-step 5d: Admin user
 
