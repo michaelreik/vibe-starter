@@ -1,6 +1,6 @@
 {
   "name": "@michaelreik/create-vibe-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scaffold a Next.js + Supabase + Vercel app pre-wired for vibe coders. Pairs with the vibe-starter template.",
   "type": "module",
   "bin": {
@@ -26,9 +26,20 @@
     "vercel",
     "starter",
     "template",
-    "vibe-coding"
+    "vibe-coding",
+    "claude-code"
   ],
+  "author": "Michael Reikersdorfer",
   "license": "MIT",
+  "homepage": "https://github.com/michaelreik/vibe-starter#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michaelreik/vibe-starter.git",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/michaelreik/vibe-starter/issues"
+  },
   "dependencies": {
     "degit": "^2.8.4"
   }
