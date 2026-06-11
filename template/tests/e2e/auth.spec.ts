@@ -5,15 +5,20 @@ test("unauthenticated user is redirected to /login from /dashboard", async ({
 }) => {
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/login$/);
-  await expect(page.getByText("Sign in")).toBeVisible();
+  // Don't use getByText("Sign in") — it matches both the card title and the
+  // submit button, which violates Playwright strict mode.
+  await expect(page.getByLabel("Email")).toBeVisible();
 });
 
-test("login form submits magic link request", async ({ page }) => {
+test("login form rejects bad credentials with an error toast", async ({
+  page,
+}) => {
   await page.goto("/login");
-  await page.getByLabel("Email").fill("test@example.com");
-  await page.getByRole("button", { name: /send magic link/i }).click();
-  // Either success state or an error toast — both prove the form submitted.
-  await expect(page.getByText(/check your email|invalid/i)).toBeVisible({
+  await page.getByLabel("Email").fill("nobody@example.com");
+  await page.getByLabel("Password").fill("definitely-wrong-password");
+  await page.getByRole("button", { name: /^sign in$/i }).click();
+  // Supabase returns "Invalid login credentials"; the page shows it via toast.
+  await expect(page.getByText(/invalid login credentials/i)).toBeVisible({
     timeout: 10_000,
   });
 });
