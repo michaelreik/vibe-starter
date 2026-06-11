@@ -14,15 +14,16 @@ cd my-app
 ```
 
 `/setup` walks you through three browser logins (GitHub, Supabase, Vercel),
-creates the remote projects, sets env vars, deploys, and verifies that
-magic-link sign-in works on the live URL. Then describe what you want to
+creates the remote projects, sets env vars, seeds your admin login
+(email + a generated password shown once), deploys, and verifies that
+password sign-in works on the live URL. Then describe what you want to
 build — the agent handles migrations, RLS, server actions, UI, tests, and
 deploys.
 
 ## What you get
 
 - **Next.js 16** App Router · React 19 · Tailwind v4 · shadcn/ui · light/dark mode
-- **Supabase** magic-link auth · RLS-correct example tables (`profiles`, `notes`) · session-refresh middleware
+- **Supabase** email + password auth (admin user seeded at `/setup`) · RLS-correct example tables (`profiles`, `notes`) · session-refresh middleware
 - **Vercel** deploy config with security headers · EU region default
 - **Tests + CI** Vitest unit · Playwright e2e · GitHub Actions on every PR
 - **10 agent skills** for first-time setup, feature loops, shipping, and on-demand additions like custom domains, transactional email, and i18n

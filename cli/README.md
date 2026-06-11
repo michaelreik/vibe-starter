@@ -31,7 +31,7 @@ create-vibe-app <project-directory> [options]
 ## What's in the template
 
 - Next.js 16 (App Router, React 19, Tailwind v4)
-- Supabase auth (magic link) + RLS-correct example tables
+- Supabase auth (email + password, admin user seeded at /setup) + RLS-correct example tables
 - shadcn/ui with light/dark mode
 - Vitest + Playwright test setup
 - GitHub Actions CI
