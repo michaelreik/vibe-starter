@@ -130,7 +130,7 @@ Three lines, no fluff:
 - **Build fails locally**: do NOT push. Fix first.
 - **Build passes locally but fails on Vercel**: usually env-var related — check that all `.env.example` keys exist as Vercel env vars (`vercel env ls`).
 - **DB schema drift**: if the Supabase remote DB is missing recent migrations, run `npx supabase db push` BEFORE the Vercel deploy, otherwise the live app crashes against an old schema.
-- **First deploy after a custom-domain change**: the magic-link `NEXT_PUBLIC_SITE_URL` env var must match the new domain — invoke `add-custom-domain` skill (Plan 4) if you didn't already.
+- **First deploy after a custom-domain change**: the `NEXT_PUBLIC_SITE_URL` env var (used in auth-email redirects) must match the new domain — invoke `add-custom-domain` skill (Plan 4) if you didn't already.
 
 ## What you do NOT do
 

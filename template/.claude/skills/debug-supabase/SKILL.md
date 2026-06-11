@@ -56,7 +56,7 @@ Most common cause: env-var mismatch between local and Vercel.
    -- compare to (await supabase.auth.getUser()).data.user.id
    ```
 
-### C. Magic link: "I never get the email"
+### C. Auth emails (password reset, invites): "I never get the email"
 
 1. **Locally**: emails go to Mailpit, not your real inbox. Open `http://127.0.0.1:54324` in a browser. Click the link from there.
 

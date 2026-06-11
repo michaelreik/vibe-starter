@@ -100,7 +100,7 @@ Repeat until it shows "Configured: ✓". DNS propagation is usually <60 seconds 
 
 ### B.5 Update NEXT_PUBLIC_SITE_URL
 
-Magic-link emails must redirect to the new domain:
+Auth emails (password reset, invites) must redirect to the new domain:
 
 ```bash
 vercel env rm NEXT_PUBLIC_SITE_URL production --yes
@@ -116,7 +116,7 @@ sed -i.bak 's|^NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=https://<domain>|' .
 
 ### B.6 Update Supabase auth redirect URLs
 
-Supabase will reject magic-link callbacks to URLs not in its allow-list.
+Supabase will reject auth-email callbacks to URLs not in its allow-list.
 Add the new domain:
 
 > "Go to https://app.supabase.com → your project → Authentication → URL Configuration. Add `https://<domain>/api/auth/callback` and `https://<domain>` to the redirect URLs list. Save."
@@ -132,8 +132,9 @@ curl -sI https://<domain> | head -3
 Expect 200 or 308. SSL is on automatically (Vercel issues LetsEncrypt cert
 within ~1 min of DNS being correct).
 
-Open the domain in a browser and have the user do a magic-link sign-in.
-Confirm the email link goes to the new domain (not the old `*.vercel.app`).
+Open the domain in a browser and have the user sign in with their email
+and password. Confirm the app works on the new domain (not the old
+`*.vercel.app`).
 
 ### B.8 Update vibe-state.json
 
@@ -198,5 +199,5 @@ redirect URLs, verify SSL + login, update state, commit).
 
 - Manage SSL certificates manually (Vercel does it).
 - Modify the user's other DNS records.
-- Skip updating `NEXT_PUBLIC_SITE_URL` and Supabase redirect URLs — magic-link login breaks otherwise.
+- Skip updating `NEXT_PUBLIC_SITE_URL` and Supabase redirect URLs — auth emails (password reset, invites) break otherwise.
 - Recommend "buy a domain through Vercel" as the default — Cloudflare is cheaper and has better tools.

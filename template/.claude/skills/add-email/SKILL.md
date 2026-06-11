@@ -170,10 +170,11 @@ echo "onboarding@resend.dev" | vercel env add EMAIL_FROM development
 ### 6. Optional: route Supabase auth emails through Resend
 
 By default Supabase uses its own SMTP with a hard ~3-emails-per-hour limit
-on free tier. For production magic-link auth at scale, swap to Resend SMTP.
+on free tier. For production auth emails at scale, swap to Resend SMTP.
 
-Ask the user: "Do you want Supabase to send magic-link emails via Resend?
-This raises the rate limit and improves deliverability. (yes/no)"
+Ask the user: "Do you want Supabase to send auth emails (password reset,
+invites) via Resend? This raises the rate limit and improves
+deliverability. (yes/no)"
 
 If yes:
 1. Resend Dashboard → SMTP. Note host, port, username (`resend`), password (an SMTP-specific token).
@@ -184,7 +185,9 @@ If yes:
    - Username: `resend`
    - Password: the token from step 1
    - Sender email: must match `EMAIL_FROM` (a verified domain on Resend, NOT `onboarding@resend.dev` — Supabase rejects that)
-3. Save. Test by triggering a magic link sign-in.
+3. Save. Test by triggering a password-reset email from the login flow
+   (or via Supabase dashboard → Authentication → Users → "Send password
+   recovery").
 
 If user doesn't have a verified domain yet, skip this step — recommend doing it after `/add-domain`.
 
