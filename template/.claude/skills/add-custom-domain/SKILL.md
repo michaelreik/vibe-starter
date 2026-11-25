@@ -49,12 +49,23 @@ Once they have a Cloudflare domain → Section B.
 
 ### B.1 Get a Cloudflare API token
 
-Tell the user:
+**The token never goes through the chat.** Do not ask the user to paste it and
+do not read or print `.env.local`. Run:
 
-> "I'll need a Cloudflare API token scoped to your zone. Go to https://dash.cloudflare.com/profile/api-tokens → Create Token → 'Edit zone DNS' template → select your domain → Create. Paste the token back here."
+```bash
+node scripts/env-tool.mjs init
+node scripts/env-tool.mjs slot CLOUDFLARE_API_TOKEN
+node scripts/env-tool.mjs open
+```
 
-Validate token format (starts with letters/digits, ~40 chars). Don't store
-it in `.env.local` — it's a one-shot for this skill. Hold it in memory.
+Then tell the user, in their language:
+
+> "I've opened your key box (`.env.local`). Please go to https://dash.cloudflare.com/profile/api-tokens → Create Token → 'Edit zone DNS' template → select only your domain → Create. Paste the token directly after `CLOUDFLARE_API_TOKEN=`, save the file, and write 'done' here. Please don't paste the token into this chat."
+
+Then run `node scripts/env-tool.mjs check CLOUDFLARE_API_TOKEN`. The token is
+only needed for B.3 and is removed afterwards. Never push it to Vercel. If the
+user pastes it into the chat anyway, ask them to delete that token at
+Cloudflare and create a new one.
 
 ### B.2 Add the domain to Vercel
 
@@ -73,19 +84,22 @@ Capture those records.
 
 ### B.3 Add DNS records via Cloudflare API
 
-For each record from Vercel:
+For each record Vercel asked for (use its values, these are examples), run:
 
 ```bash
-ZONE_ID=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-  "https://api.cloudflare.com/client/v4/zones?name=<domain>" | jq -r '.result[0].id')
+node scripts/env-tool.mjs cloudflare-dns <zone> A @ 76.76.21.21
+node scripts/env-tool.mjs cloudflare-dns <zone> CNAME www cname.vercel-dns.com
+```
 
-curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" \
-  "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-  --data '{"type":"A","name":"@","content":"76.76.21.21","proxied":false,"ttl":1}'
+`<zone>` is the registered domain (`yourapp.com`), even for a subdomain. The
+tool refuses to touch existing records. If it reports a conflict, show it to
+the user and let them decide in the Cloudflare dashboard.
 
-curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" \
-  "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-  --data '{"type":"CNAME","name":"www","content":"cname.vercel-dns.com","proxied":false,"ttl":1}'
+When the records exist, remove the token and tell the user they can also
+delete it at Cloudflare:
+
+```bash
+node scripts/env-tool.mjs unset CLOUDFLARE_API_TOKEN
 ```
 
 **Important:** `proxied: false` — Cloudflare proxying conflicts with Vercel's edge. The DNS-only "grey cloud" is correct.
@@ -103,16 +117,12 @@ Repeat until it shows "Configured: ✓". DNS propagation is usually <60 seconds 
 Auth emails (password reset, invites) must redirect to the new domain:
 
 ```bash
-vercel env rm NEXT_PUBLIC_SITE_URL production --yes
-echo "https://<domain>" | vercel env add NEXT_PUBLIC_SITE_URL production
+vercel env add NEXT_PUBLIC_SITE_URL production --value "https://<domain>" --yes --force
 vercel --prod  # redeploy so the new env var takes effect
 ```
 
-Update `.env.local` similarly so dev mode matches:
-
-```bash
-sed -i.bak 's|^NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=https://<domain>|' .env.local && rm .env.local.bak
-```
+Leave `.env.local` on `http://localhost:3000`, so the app keeps working on the
+user's computer.
 
 ### B.6 Update Supabase auth redirect URLs
 
@@ -199,5 +209,7 @@ redirect URLs, verify SSL + login, update state, commit).
 
 - Manage SSL certificates manually (Vercel does it).
 - Modify the user's other DNS records.
+- Ask for tokens in the chat, or read or print `.env.local`.
+- Point `NEXT_PUBLIC_SITE_URL` in `.env.local` at the live domain.
 - Skip updating `NEXT_PUBLIC_SITE_URL` and Supabase redirect URLs — auth emails (password reset, invites) break otherwise.
 - Recommend "buy a domain through Vercel" as the default — Cloudflare is cheaper and has better tools.

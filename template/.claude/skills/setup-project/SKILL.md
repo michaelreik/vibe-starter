@@ -44,6 +44,15 @@ resume from the first incomplete one.
 Always update `.vibe-state.json` after each stage completes. Never delete keys —
 add new ones over time.
 
+## Secrets — read first
+
+Secret values never go through the chat. Do not ask the user to paste a key,
+do not print `.env.local`, and do not run commands that print API keys (for
+example a bare `supabase projects api-keys`). Use `node scripts/env-tool.mjs`,
+which stores, checks and pushes values without showing them. Tell the user in
+plain words what is happening ("I'm saving your keys in the key box on your
+laptop and at Vercel").
+
 ## Stages
 
 ### Stage 1: tools_check
@@ -109,17 +118,20 @@ If `.vibe-state.json.github_repo` is unset:
 #### Sub-step 5b: Supabase project
 
 If `.vibe-state.json.supabase_project_ref` is unset:
-- Generate a random database password (24+ chars, alphanumeric + symbols).
-  Example: `openssl rand -base64 24 | tr -d '+/=' | head -c 24`. Tell the user
-  the password is being saved to the password manager (1Password, etc.) — actually,
-  for a starter, write it to `.env.local` under `SUPABASE_DB_PASSWORD` (gitignored)
-  AND tell the user to copy it somewhere safe. Mention they can also retrieve it
-  from `app.supabase.com → Project Settings → Database`.
-- Run `npx supabase projects create <name> --org-id <get from prompt or supabase orgs list> --region <region> --db-password <generated>`.
+- Run `node scripts/env-tool.mjs init`, then
+  `node scripts/env-tool.mjs generate SUPABASE_DB_PASSWORD`. The password is
+  stored in `.env.local` (gitignored) and is never shown in the chat. Tell the
+  user they can copy it into their password manager from that file
+  (`node scripts/env-tool.mjs open`), or reset it later at
+  `app.supabase.com → Project Settings → Database`.
+- Run `npx supabase projects create <name> --org-id <get from prompt or supabase orgs list> --region <region> --db-password "$(node --env-file=.env.local -p process.env.SUPABASE_DB_PASSWORD)"`.
 - Get the project ref from output (`supabase projects list` shows it).
 - `npx supabase link --project-ref <ref>` to link the local CLI.
 - `npx supabase db push --include-all` to apply migrations to the remote.
-- Pull the API URL and anon key: `npx supabase projects api-keys --project-ref <ref>`.
+- Store the API URL and keys locally: `node scripts/env-tool.mjs supabase <ref>`.
+  New projects can take a minute before keys exist; wait and retry if it fails.
+- Store the local site URL: `node scripts/env-tool.mjs set NEXT_PUBLIC_SITE_URL http://localhost:3000`.
+  `.env.local` now has everything `npm run dev` needs.
 - Record `supabase_project_ref` in state.
 
 If the user has hit the Free Tier limit (max 2 projects), STOP with a clear error:
@@ -130,11 +142,11 @@ to Pro." Do not try to work around this.
 
 If `.vibe-state.json.vercel_project_id` is unset:
 - `vercel link --yes` (auto-pairs to a new Vercel project named after the folder).
-- Add env vars: for each of `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`:
-  - `echo "<value>" | vercel env add <name> production`
-  - `echo "<value>" | vercel env add <name> preview`
-  - `echo "<value>" | vercel env add <name> development`
-- For `NEXT_PUBLIC_SITE_URL` use a placeholder (`https://placeholder.vercel.app`); update it after the first deploy reveals the actual URL.
+- Push the three Supabase values: `node scripts/env-tool.mjs push NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY`.
+- Add a placeholder site URL for both targets; it is replaced after the first deploy:
+  - `vercel env add NEXT_PUBLIC_SITE_URL production --value "https://placeholder.vercel.app" --yes --force`
+  - `vercel env add NEXT_PUBLIC_SITE_URL preview --value "https://placeholder.vercel.app" --yes --force`
+- Do not run `vercel env pull`: it would overwrite `.env.local`.
 - Read `.vercel/project.json` for `projectId`, record in state.
 
 If Vercel Free Tier limit (3 hobby projects), STOP with the same kind of message.
@@ -169,14 +181,18 @@ if `.vibe-state.json.admin_email` is unset.
 3. **Show both clearly** and pause: tell the user the password is shown
    only once, ask them to save it in their password manager, and wait for a
    "saved" confirmation before continuing.
-4. Create the user via the Supabase Admin API. Use the service-role key
-   from earlier (do NOT use the anon key — admin endpoints reject it):
+4. Create the user via the Supabase Admin API. The service-role
+   key is read from `.env.local` and is not printed:
    ```bash
-   curl -sf -X POST "${SUPABASE_URL}/auth/v1/admin/users" \
-     -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-     -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-     -H "Content-Type: application/json" \
-     -d "{\"email\":\"<email>\",\"password\":\"<password>\",\"email_confirm\":true}"
+   ADMIN_EMAIL='<email>' ADMIN_PASSWORD='<password>' node --env-file=.env.local -e '
+   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+   const headers = { apikey: key, "Content-Type": "application/json" };
+   if (!key.startsWith("sb_secret_")) headers.Authorization = `Bearer ${key}`;
+   fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users`, {
+     method: "POST", headers,
+     body: JSON.stringify({ email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD, email_confirm: true }),
+   }).then(async (r) => { console.log(r.ok ? "Admin user created" : `Failed (${r.status})`); if (!r.ok) process.exit(1); });
+   '
    ```
    `email_confirm: true` marks the address as already verified so the user can
    sign in without clicking a confirmation link.
@@ -192,8 +208,8 @@ output. Save it as `vercel_url` in state.
 
 Update the `NEXT_PUBLIC_SITE_URL` Vercel env var to the real URL (used by
 any future email features and shared everywhere `siteUrl` is referenced):
-- `vercel env rm NEXT_PUBLIC_SITE_URL production --yes`
-- `echo "<real url>" | vercel env add NEXT_PUBLIC_SITE_URL production`
+- `vercel env add NEXT_PUBLIC_SITE_URL production --value "<real url>" --yes --force`
+- Same for `preview`. Leave `.env.local` on `http://localhost:3000`.
 - Re-deploy: `vercel --prod` (so the new env var takes effect).
 
 Append `"first_deploy"`.
@@ -235,5 +251,6 @@ If you stopped mid-flow due to an error, report exactly which stage failed, what
 - Spend the user's money without consent (paid Supabase tier, paid Vercel tier, paid domain).
 - Skip RLS or migrations to "make it faster".
 - Push secrets to git.
+- Print secret values or ask for them in the chat.
 - Modify `vercel.json` regions silently — ask first.
 - Continue past a Free Tier limit error — surface it.

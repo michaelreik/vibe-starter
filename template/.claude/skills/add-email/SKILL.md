@@ -24,12 +24,29 @@ project hasn't been onboarded. Recommend `/setup` first and stop.
 
 ### 1. Resend account + API key (user-driven)
 
-Tell the user:
+**The key never goes through the chat.** Do not ask the user to paste it and
+do not read or print `.env.local`. Run:
 
-> "I'll need a Resend API key. If you don't have an account, sign up at https://resend.com/signup (free, 3,000 emails/month). Once signed in: Dashboard → API Keys → Create API Key. Paste it back here when ready."
+```bash
+node scripts/env-tool.mjs init
+node scripts/env-tool.mjs check RESEND_API_KEY re_
+```
 
-Wait for the user to paste a key. It starts with `re_`. Validate the
-prefix; if it doesn't match, ask again.
+If the check passes, the key is already there: continue with the next step. Otherwise:
+
+```bash
+node scripts/env-tool.mjs slot RESEND_API_KEY
+node scripts/env-tool.mjs open
+```
+
+Then tell the user, in their language:
+
+> "I've opened your key box (`.env.local`). Please create a Resend key: sign up at https://resend.com/signup (free), then API Keys → Create API Key → Sending access. Paste it directly after `RESEND_API_KEY=`, save the file, and write 'done' here. Please don't paste the key into this chat."
+
+When they say done, run the `check` again. If it fails, explain what is wrong
+(missing, or not starting with `re_`) and let them fix the file. If the user
+pastes a key into the chat anyway, tell them kindly to revoke it at Resend and
+create a new one, because the chat history keeps it.
 
 If the user wants to send from a custom domain (e.g., `hello@yourapp.com`),
 they need to verify the domain on Resend (Dashboard → Domains). For now,
@@ -149,23 +166,21 @@ RESEND_API_KEY=
 EMAIL_FROM=onboarding@resend.dev
 ```
 
-Also write to `.env.local` immediately so dev mode works:
+Set the from-address locally (not a secret):
 
 ```bash
-echo "RESEND_API_KEY=<the key the user pasted>" >> .env.local
-echo "EMAIL_FROM=onboarding@resend.dev" >> .env.local
+node scripts/env-tool.mjs set EMAIL_FROM onboarding@resend.dev
 ```
 
 ### 5. Push env vars to Vercel
 
+The tool reads the values from `.env.local`, so nothing is shown:
+
 ```bash
-echo "<key>" | vercel env add RESEND_API_KEY production
-echo "<key>" | vercel env add RESEND_API_KEY preview
-echo "<key>" | vercel env add RESEND_API_KEY development
-echo "onboarding@resend.dev" | vercel env add EMAIL_FROM production
-echo "onboarding@resend.dev" | vercel env add EMAIL_FROM preview
-echo "onboarding@resend.dev" | vercel env add EMAIL_FROM development
+node scripts/env-tool.mjs push RESEND_API_KEY EMAIL_FROM
 ```
+
+They take effect with the next deploy (`/ship`).
 
 ### 6. Optional: route Supabase auth emails through Resend
 
@@ -196,7 +211,7 @@ If user doesn't have a verified domain yet, skip this step — recommend doing i
 Add a quick smoke command (don't ship as a real route — this is for verification):
 
 ```bash
-node --input-type=module -e "
+node --env-file=.env.local --input-type=module -e "
 import { Resend } from 'resend';
 const r = new Resend(process.env.RESEND_API_KEY);
 const { data, error } = await r.emails.send({
@@ -212,6 +227,8 @@ console.log(error || data);
 `delivered@resend.dev` is Resend's test address — it accepts emails without sending them, so this won't waste your quota. Expect `{ id: '...' }` printed.
 
 ### 8. Commit
+
+Make sure `.env.local` is not staged.
 
 ```bash
 git add lib/email/ .env.example package.json package-lock.json
@@ -229,5 +246,6 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ## What you do NOT do
 
 - Hard-code API keys in source.
+- Ask for keys in the chat, or read or print `.env.local`.
 - Send real emails to real addresses during smoke tests — use `delivered@resend.dev`.
 - Skip pushing env vars to Vercel and then wonder why prod can't send email.
